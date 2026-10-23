@@ -1,0 +1,77 @@
+\documentclass[a4paper,addpoints]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=1.5cm]{geometry}
+\usepackage{amsfonts,amssymb,amsmath, amsthm}
+\usepackage{tikz}
+\usetikzlibrary{shapes, arrows, fit, calc, positioning}
+\usepackage{tikz-uml}
+\tikzumlset{fill class=white, fill usecase=white, text=black, draw=black}
+
+\begin{document}
+
+\begin{center}
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}
+
+% --- Colonna sinistra ---
+\umlclass[x=0, y=0]{Cliente}{
+  nome : string \\ cognome : string \\ email : string
+}{
+  registrazione() : void \\ login() : bool
+}
+
+\umlclass[x=0, y=-5]{ClienteRegistrato}{
+  password : string
+}{
+  visualizzaOfferte() : void \\
+  cercaOfferte(testo : string) : void \\
+  ordinaPerPrezzo() : void
+}
+
+\umlclass[x=-1, y=-9.5]{GPS}{}{
+  getPosizione() : Posizione
+}
+
+% --- Colonna centrale ---
+\umlclass[x=6.5, y=-1]{Offerta}{
+  descrizione : string \\ prezzo : float
+}{}
+
+\umlclass[x=6.5, y=-5]{StoricoPrezzo}{
+  data : datetime \\ prezzo : float
+}{}
+
+\umlclass[x=6.5, y=-9.5]{Posizione}{
+  latitudine : float \\ longitudine : float
+}{}
+
+% --- Colonna destra ---
+\umlclass[x=12.5, y=-1]{Prodotto}{
+  nome : string \\ descrizione : string
+}{}
+
+\umlclass[x=12.5, y=-5]{Categoria}{
+  nome : string
+}{}
+
+% --- Relazioni ---
+\umlinherit{ClienteRegistrato}{Cliente}
+
+\umlassoc[mult1=*, mult2=*]{ClienteRegistrato}{Offerta}
+
+\umlcompo[mult1=1, mult2=*]{Offerta}{StoricoPrezzo}
+
+\umlassoc[mult1=*, mult2=1]{Offerta}{Posizione}
+
+\umlassoc[mult1=1, mult2=1]{GPS}{Posizione}
+
+\umlassoc[mult1=*, mult2=1]{Offerta}{Prodotto}
+
+\umlassoc[mult1=*, mult2=1]{Prodotto}{Categoria}
+
+\end{tikzpicture}%
+}
+\end{center}
+
+\end{document}
