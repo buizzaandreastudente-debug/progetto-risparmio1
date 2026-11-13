@@ -8,7 +8,7 @@
 \begin{tikzpicture}[
   font=\sffamily\small,
   line/.style={draw=black, line width=0.6pt},
-  entita/.style={rectangle, draw=black, fill=white, line width=1pt,
+  entita/.style={rectangle, draw=black, fill=white, line width=1pt, align=center,
                  minimum width=3.2cm, minimum height=1.2cm, font=\sffamily\bfseries},
   relazione/.style={diamond, aspect=2.2, draw=black, fill=white,
                     line width=1pt, inner sep=1pt, font=\sffamily\bfseries\footnotesize},
@@ -18,19 +18,24 @@
 ]
 
 % ---------- ENTITÀ ----------
-\node[entita] (cliente)   at (0,0)       {CLIENTE};
+% Il cliente non registrato non ha dati, quindi e' presente solo il cliente registrato
+\node[entita] (cliente)   at (0,0)       {CLIENTE\\REGISTRATO};
 \node[entita] (offerta)   at (8,0)       {OFFERTA};
 \node[entita] (prodotto)  at (16.5,0)    {PRODOTTO};
+\node[entita] (marca)     at (25.5,0)    {MARCA};
 \node[entita] (storico)   at (8,-5.5)    {STORICO\_PREZZO};
 \node[entita] (categoria) at (16.5,-5.5) {CATEGORIA};
-\node[entita] (posizione) at (8,-11)     {POSIZIONE};
+\node[entita] (posizione) at (-1.5,-6.5) {POSIZIONE};
+\node[entita] (gps)       at (-1.5,-13)  {GPS};
 
 % ---------- RELAZIONI ----------
-\node[relazione] (consulta)  at (4,0)        {consulta};
+\node[relazione] (consulta)  at (4.2,0)      {consulta};
 \node[relazione] (riguarda)  at (12.2,0)     {riguarda};
+\node[relazione] (prodottodi) at (21,0)      {prodotto\_di};
 \node[relazione] (hastorico) at (8,-2.75)    {ha\_storico};
 \node[relazione] (classif)   at (16.5,-2.75) {classificazione};
-\node[relazione] (localizz)  at (8,-8.25)    {localizzata\_in};
+\node[relazione] (localizz)  at (3.5,-4.5)   {localizzata\_in};
+\node[relazione] (fornisce)  at (-1.5,-10.2) {fornisce};
 
 % ---------- COLLEGAMENTI + CARDINALITÀ ----------
 \draw[line] (cliente) -- (consulta)  node[card, pos=0.25, above] {N};
@@ -39,21 +44,27 @@
 \draw[line] (offerta) -- (riguarda)  node[card, pos=0.25, above] {N};
 \draw[line] (riguarda) -- (prodotto) node[card, pos=0.75, above] {1};
 
+\draw[line] (prodotto) -- (prodottodi) node[card, pos=0.3, above] {N};
+\draw[line] (prodottodi) -- (marca)    node[card, pos=0.7, above] {1};
+
 \draw[line] (offerta) -- (hastorico) node[card, pos=0.3, right] {1};
 \draw[line] (hastorico) -- (storico) node[card, pos=0.7, right] {N};
 
 \draw[line] (prodotto) -- (classif)  node[card, pos=0.3, right] {N};
 \draw[line] (classif) -- (categoria) node[card, pos=0.7, right] {1};
 
-\draw[line] (storico) -- (localizz)  node[card, pos=0.3, right] {1};
-\draw[line] (localizz) -- (posizione) node[card, pos=0.7, right] {1};
+\draw[line] (offerta) -- (localizz)    node[card, pos=0.7, above] {N};
+\draw[line] (localizz) -- (posizione)  node[card, pos=0.6, above] {1};
+
+\draw[line] (gps) -- (fornisce)        node[card, pos=0.3, right] {1};
+\draw[line] (fornisce) -- (posizione)  node[card, pos=0.7, right] {N};
 
 % ---------- ATTRIBUTI (chiavi primarie sottolineate) ----------
-% CLIENTE
-\node[attributo] (c-id)       at (-3.6,0.0)  {\underline{id\_cliente}};
+% CLIENTE REGISTRATO
+\node[attributo] (c-id)       at (-3.8,0.0)  {\underline{id\_cliente}};
 \node[attributo] (c-nome)     at (-1.8,2.2)  {nome};
 \node[attributo] (c-cognome)  at (1.6,3.0)   {cognome};
-\node[attributo] (c-email)    at (-2.6,-2.2) {email};
+\node[attributo] (c-email)    at (-3.0,-2.3) {email};
 \node[attributo] (c-password) at (1.0,-2.6)  {password};
 \draw[line] (cliente) -- (c-id);
 \draw[line] (cliente) -- (c-nome);
@@ -77,10 +88,16 @@
 \draw[line] (prodotto) -- (p-nome);
 \draw[line] (prodotto) -- (p-descr);
 
+% MARCA
+\node[attributo] (m-id)   at (25.5,3.2)  {\underline{id\_marca}};
+\node[attributo] (m-nome) at (25.5,-2.4) {nome};
+\draw[line] (marca) -- (m-id);
+\draw[line] (marca) -- (m-nome);
+
 % STORICO_PREZZO
 \node[attributo] (s-id)     at (12.3,-5.5) {\underline{id\_storico}};
-\node[attributo] (s-data)   at (3.8,-4.8)  {data};
-\node[attributo] (s-prezzo) at (3.8,-6.4)  {prezzo};
+\node[attributo] (s-data)   at (5.2,-7.8)  {data};
+\node[attributo] (s-prezzo) at (10.8,-7.8) {prezzo};
 \draw[line] (storico) -- (s-id);
 \draw[line] (storico) -- (s-data);
 \draw[line] (storico) -- (s-prezzo);
@@ -92,14 +109,16 @@
 \draw[line] (categoria) -- (cat-nome);
 
 % POSIZIONE
-\node[attributo] (pos-id)  at (12.3,-11)   {\underline{id\_posizione}};
-\node[attributo] (pos-lat) at (5.6,-13.0)  {latitudine};
-\node[attributo] (pos-lon) at (10.6,-13.0) {longitudine};
+\node[attributo] (pos-id)  at (-5.6,-6.5)  {\underline{id\_posizione}};
+\node[attributo] (pos-lat) at (-5.0,-8.7)  {latitudine};
+\node[attributo] (pos-lon) at (2.0,-8.5)   {longitudine};
 \draw[line] (posizione) -- (pos-id);
 \draw[line] (posizione) -- (pos-lat);
 \draw[line] (posizione) -- (pos-lon);
 
-
+% GPS
+\node[attributo] (g-id) at (3.2,-13) {\underline{id\_gps}};
+\draw[line] (gps) -- (g-id);
 
 \end{tikzpicture}
 \end{document}
