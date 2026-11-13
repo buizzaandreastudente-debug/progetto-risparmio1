@@ -15,21 +15,22 @@
 \begin{tikzpicture}
 
 % --- Colonna sinistra ---
-\umlclass[x=0, y=0]{Cliente}{
-  nome : string \\ cognome : string \\ email : string
-}{
-  registrazione() : void \\ login() : bool
+% Il cliente non registrato non ha dati: puo' solo registrarsi o fare il login
+\umlclass[x=0, y=0]{Cliente}{}{
+  registrazione() : void \\ login() : bool \\ visualizzaStoricoPrezzi() : void
 }
 
-\umlclass[x=0, y=-5]{ClienteRegistrato}{
-  password : string
+% I dati personali appartengono solo al cliente registrato
+\umlclass[x=0, y=-5.5]{ClienteRegistrato}{
+  nome : string \\ cognome : string \\ email : string \\ password : string
 }{
   visualizzaOfferte() : void \\
   cercaOfferte(testo : string) : void \\
-  ordinaPerPrezzo() : void
+  ordinaPerPrezzo() : void \\
+  filtraPerMarca(marca : string) : void
 }
 
-\umlclass[x=-1, y=-9.5]{GPS}{}{
+\umlclass[x=-1, y=-11]{GPS}{}{
   getPosizione() : Posizione
 }
 
@@ -38,11 +39,11 @@
   descrizione : string \\ prezzo : float
 }{}
 
-\umlclass[x=6.5, y=-5]{StoricoPrezzo}{
+\umlclass[x=6.5, y=-5.5]{StoricoPrezzo}{
   data : datetime \\ prezzo : float
 }{}
 
-\umlclass[x=6.5, y=-9.5]{Posizione}{
+\umlclass[x=6.5, y=-11]{Posizione}{
   latitudine : float \\ longitudine : float
 }{}
 
@@ -51,7 +52,11 @@
   nome : string \\ descrizione : string
 }{}
 
-\umlclass[x=12.5, y=-5]{Categoria}{
+\umlclass[x=12.5, y=-5.5]{Categoria}{
+  nome : string
+}{}
+
+\umlclass[x=18.5, y=-1]{Marca}{
   nome : string
 }{}
 
@@ -64,11 +69,14 @@
 
 \umlassoc[mult1=*, mult2=1]{Offerta}{Posizione}
 
-\umlassoc[mult1=1, mult2=1]{GPS}{Posizione}
+% il GPS fornisce le posizioni (non e' una relazione 1-1)
+\umlassoc[name=fornisce, mult1=1, mult2=*]{GPS}{Posizione}
 
 \umlassoc[mult1=*, mult2=1]{Offerta}{Prodotto}
 
 \umlassoc[mult1=*, mult2=1]{Prodotto}{Categoria}
+
+\umlassoc[mult1=*, mult2=1]{Prodotto}{Marca}
 
 \end{tikzpicture}%
 }
